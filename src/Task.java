@@ -41,6 +41,10 @@ public class Task implements Comparable<Task> {
         return priority;
     }
 
+    public boolean isCompleted() {
+        return isCompleted;
+    }
+
     // Marks the task as completed and sets the completion date
     public void markAsCompleted() {
         this.completionDate = new Date();
