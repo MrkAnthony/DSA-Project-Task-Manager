@@ -1,33 +1,34 @@
 import java.util.Date;
 import java.util.Objects;
 
-// Task class representing a to-do item with priority, status, and other attributes
+// Task class representing a to-do item with attributes like ID, priority, status, and more
 public class Task implements Comparable<Task> {
+
     // Constants for priority levels
     private static final String PRIORITY_HIGH = "High";
     private static final String PRIORITY_MEDIUM = "Medium";
     private static final String PRIORITY_LOW = "Low";
 
-    // Task attributes
+    // Attributes of the task
     private int id;                    // Unique task identifier
-    private String description;        // Task description
-    private String priority;           // Task priority level
-    private boolean isCompleted;       // Completion status
-    private Date creationDate;         // Date of task creation
-    private Date completionDate;       // Date of task completion
-    private String category;           // Task category (optional)
+    private String description;        // Description of the task
+    private String priority;           // Priority of the task (High, Medium, Low)
+    private boolean isCompleted;       // Completion status of the task
+    private Date creationDate;         // Date when the task was created
+    private Date completionDate;       // Date when the task was completed (if any)
+    private String category;           // Optional category of the task
 
-    // Constructor to initialize Task with id, description, and priority
+    // Constructor to initialize a Task object
     public Task(int id, String description, String priority) {
-        this.id = id;
-        this.description = description;
-        this.priority = validatePriority(priority);
-        this.isCompleted = false;
-        this.creationDate = new Date();
-        this.completionDate = null;
+        this.id = id;                           // Assign task ID
+        this.description = description;         // Set task description
+        this.priority = validatePriority(priority); // Validate and set the priority
+        this.isCompleted = false;               // Mark task as not completed initially
+        this.creationDate = new Date();         // Set creation date to current date
+        this.completionDate = null;             // No completion date initially
     }
 
-    // Validates and sets the priority level
+    // Method to validate the priority input and ensure it is valid
     private String validatePriority(String priority) {
         if (priority == null || priority.trim().isEmpty()) {
             throw new IllegalArgumentException("Priority cannot be null or empty");
@@ -38,42 +39,61 @@ public class Task implements Comparable<Task> {
                 !upperPriority.equals(PRIORITY_LOW.toUpperCase())) {
             throw new IllegalArgumentException("Invalid priority level");
         }
-        return priority;
+        return priority; // Return validated priority
     }
 
+    // Getter method to check if the task is completed
     public boolean isCompleted() {
         return isCompleted;
     }
 
-    // Marks the task as completed and sets the completion date
+    // Getter method for the task description
+    public String getDescription() {
+        return description;
+    }
+
+    // Getter method for the task priority
+    public String getPriority() {
+        return priority;
+    }
+
+    // Method to mark the task as completed
     public void markAsCompleted() {
-        this.completionDate = new Date();
+        this.completionDate = new Date(); // Set completion date to current date
+        this.isCompleted = true;         // Mark task as completed
     }
 
-    // Resets task completion status and clears the completion date
+    // Method to reset task completion status
     public void markAsNotCompleted() {
-        this.completionDate = null;
+        this.completionDate = null;      // Clear the completion date
+        this.isCompleted = false;        // Mark task as not completed
     }
 
-    // Compares tasks based on priority levels
+    // Getter method for the task ID
+    public int getId() {
+        return id;
+    }
+
+    // Method to compare tasks based on their priority for sorting
     @Override
     public int compareTo(Task o) {
-        return getPriorityValue(this.priority) - getPriorityValue(o.priority);
+        // Higher priority tasks are ordered before lower priority tasks
+        return getPriorityValue(o.priority) - getPriorityValue(this.priority);
     }
 
-    // Helper method to convert priority to numeric value
+    // Helper method to convert priority levels to numeric values for comparison
     private int getPriorityValue(String priority) {
         if (priority.equalsIgnoreCase(PRIORITY_HIGH)) {
-            return 1;
+            return 1; // High priority has the highest precedence
         } else if (priority.equalsIgnoreCase(PRIORITY_MEDIUM)) {
-            return 2;
+            return 2; // Medium priority has moderate precedence
         } else if (priority.equalsIgnoreCase(PRIORITY_LOW)) {
-            return 3;
+            return 3; // Low priority has the lowest precedence
         }
-        return 3; // Default for invalid priority
+        return 3; // Default to lowest precedence for invalid priority
     }
 
-    // Overrides toString() to format Task details for display
+    // Override of the toString() method to provide a readable task representation
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -81,43 +101,47 @@ public class Task implements Comparable<Task> {
         sb.append("\nDescription: ").append(description);
         sb.append("\nPriority:  ").append(priority);
 
-        if (isCompleted && completionDate != null) {
-            sb.append("\nCompleted On: ").append(completionDate);
-        } else {
-            sb.append("\nStatus: Pending");
+        if (isCompleted) { // Include completion details if the task is completed
+            sb.append("\nStatus: Completed");
+            if (completionDate != null) {
+                sb.append("\nCompleted On: ").append(completionDate);
+            }
+        } else { // Indicate if the task is still pending
+            sb.append("\nStatus: Pending...");
         }
 
+        // Include category information if it is provided
         if (category != null && !category.trim().isEmpty()) {
             sb.append("\nCategory: ").append(category);
         }
-        return sb.toString();
+        return sb.toString(); // Return the formatted string
     }
 
-    // Overrides equals() to compare tasks by id, description, and priority
+    // Override of the equals() method to define task equality based on ID, description, and priority
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
-            return false;
+            return false; // Return false if the other object is null
         }
         if (this == obj) {
-            return true;
+            return true; // Return true if comparing the same instance
         }
         if (!(obj instanceof Task)) {
-            return false;
+            return false; // Return false if the other object is not a Task
         }
-        Task otherTask = (Task) obj;
+        Task otherTask = (Task) obj; // Cast object to Task
         return this.id == otherTask.id &&
                 Objects.equals(this.description, otherTask.description) &&
                 Objects.equals(this.priority, otherTask.priority);
     }
 
-    // Overrides hashCode() to compute a hash based on id, description, and priority
+    // Override of the hashCode() method to generate a hash based on task attributes
     @Override
     public int hashCode() {
         int result = 17;
-        result = 31 * result + id;
-        result = 31 * result + (description == null ? 0 : description.hashCode());
-        result = 31 * result + (priority == null ? 0 : priority.hashCode());
-        return result;
+        result = 31 * result + id;                  // Include ID in hash
+        result = 31 * result + (description == null ? 0 : description.hashCode()); // Include description in hash
+        result = 31 * result + (priority == null ? 0 : priority.hashCode());       // Include priority in hash
+        return result; // Return the computed hash value
     }
 }
